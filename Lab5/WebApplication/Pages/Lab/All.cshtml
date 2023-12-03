@@ -1,0 +1,23 @@
+﻿@page
+@{
+    ViewData["Title"] = "Список лабораторних робіт";
+}
+
+
+<div class="row">
+    <div class="col-6 mx-auto">
+        <div class="card">
+            <div class="card-header text-center">
+                Список лабораторних робіт
+            </div>
+            <div class="card-body text-center">
+                @for (int i = 1; i <= 3; ++i)
+                {
+                    <a asp-page="/Lab/Index" asp-route-Number=@i>
+                        Лабораторна робота №@i
+                    </a><br />
+                }
+            </div>
+        </div>
+    </div>
+</div>

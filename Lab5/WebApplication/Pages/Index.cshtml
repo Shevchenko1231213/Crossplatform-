@@ -1,0 +1,30 @@
+﻿@page
+@{
+    ViewData["Title"] = "Web Application";
+}
+
+
+<div class="row">
+    <div class="col-6 mx-auto">
+        <div class="card">
+            <div class="card-header text-center">
+                Сторінка вітання
+            </div>
+            <div class="card-body">
+                <p>
+                    <a href="http://localhost:5000">Сервер аутентифікації та авторизації</a>.
+                    Для запуску лабораторних робіт №1-3 потрібно ввійти у систему.
+                </p>
+                <p>
+                    <a asp-page="/Account/Profile">Сторінка профілю</a>.
+                    На цій сторінці можна переглянути інформацію про користувача.
+                </p>
+                <p>
+                    <a asp-page="/Lab/All">Список лабораторних робіт</a>.
+                    На цій сторінці можна вибрати лабораторну роботу для запуску.
+                </p>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>

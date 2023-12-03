@@ -1,0 +1,68 @@
+﻿@page
+@using Duende.IdentityServer.Extensions
+@model RegisterModel
+@{
+    ViewData["Title"] = "Реєстрація";
+}
+
+
+<div class="row">
+    <div class="col-6 mx-auto">
+        <div class="card">
+            <div class="card-header text-center">
+                Реєстрація
+            </div>
+            <div class="card-body">
+                <div class="text-danger" asp-validation-summary="All"></div>
+                <form method="post">
+                    <div class="mt-3">
+                        <label class="form-label" asp-for=UserName>Ім'я</label>
+                        <input class="form-control"
+                               asp-for=UserName
+                               value=@Model.UserName />
+                    </div>
+                    <div class="mt-3">
+                        <label class="form-label" asp-for=FullName>ПІБ</label>
+                        <input class="form-control"
+                               asp-for=FullName
+                               value=@Model.FullName />
+                    </div>
+                    <div class="mt-3">
+                        <label class="form-label" asp-for=Password>Пароль</label>
+                        <input class="form-control"
+                               type="password"
+                               asp-for=Password
+                               value=@Model.Password />
+                    </div>
+                    <div class="mt-3">
+                        <label class="form-label" asp-for=ConfirmationPassword>
+                            Підтвердження паролю
+                        </label>
+                        <input class="form-control"
+                               type="password"
+                               asp-for=ConfirmationPassword
+                               value=@Model.ConfirmationPassword />
+                    </div>
+                    <div class="mt-3">
+                        <label class="form-label" asp-for=PhoneNumber>
+                            Номер телефону
+                        </label>
+                        <input class="form-control"
+                               asp-for=PhoneNumber
+                               value=@Model.PhoneNumber />
+                    </div>
+                    <div class="mt-3">
+                        <label class="form-label" asp-for=Email>Електронна пошта</label>
+                        <input class="form-control"
+                               type="email"
+                               asp-for=Email
+                               value=@Model.Email />
+                    </div>
+                    <button class="btn btn-primary mt-3" type="submit">
+                        Зареєструватись
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

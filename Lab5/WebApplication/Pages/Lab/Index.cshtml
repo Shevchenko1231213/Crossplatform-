@@ -1,0 +1,63 @@
+﻿@page "{Number:int}"
+@model IndexModel
+@{
+    ViewData["Title"] = $"Лабораторна робота №{Model.Number}";
+}
+
+
+@if (ViewContext.ModelState.IsValid)
+{
+    <div class="row justify-content-center">
+        <div class="col-8">
+            <div class="card">
+                <div class="card-header text-center">
+                    Опис
+                </div>
+                <div class="card-body">
+                    <partial name=@($"_Content{Model.Number}") />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center mt-5">
+        <div class="col-8">
+            <div class="card">
+                <div class="card-header text-center">
+                    Вхідні дані
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <textarea class="form-control mt-3"
+                                  asp-for=Input
+                                  rows="10">
+                            @Model.Input
+                            </textarea>
+                        <button class="btn btn-primary mt-3" type="submit">Виконати</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center mt-5">
+        <div class="col-8">
+            <div class="card">
+                <div class="card-header text-center">
+                    Вихідні дані
+                </div>
+                <div class="card-body">
+                    <span style="white-space: pre-wrap;">@Model.Output</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-6 mx-auto">
+            <div class="card bg-danger">
+                <div class="card-body" asp-validation-summary="All"></div>
+            </div>
+        </div>
+    </div>
+}

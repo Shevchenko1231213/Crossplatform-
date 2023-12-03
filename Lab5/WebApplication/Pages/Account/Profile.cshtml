@@ -1,0 +1,36 @@
+﻿@page
+@model AboutModel
+@{
+    ViewData["Title"] = "Профіль";
+}
+
+
+<div class="row">
+    <div class="col-6 mx-auto">
+        <div class="card">
+            <div class="card-header text-center">
+                Інформація про мене
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <tr>
+                        <td>Ім'я</td>
+                        <td>@Model.UserName</td>
+                    </tr>
+                    <tr>
+                        <td>ПІБ</td>
+                        <td>@Model.FullName</td>
+                    </tr>
+                    <tr>
+                        <td>Номер телефону</td>
+                        <td>@Model.PhoneNumber</td>
+                    </tr>
+                    <tr>
+                        <td>Пошта</td>
+                        <td>@Model.Email</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
