@@ -1,0 +1,71 @@
+Vagrant.configure "2" do |config|
+    config.vm.define "mac" do |mac|
+        mac.vm.box = "nick-invision/macos-bigsur-base"
+        mac.vm.boot_timeout = 1800
+        mac.vm.provider "virtualbox" do |vb|
+            vb.name = "mac"
+            vb.memory = 4096
+        end
+
+        mac.vm.provision "shell", privileged: false, inline: <<~SCRIPT
+            curl https://download.visualstudio.microsoft.com/download/pr/e59acfc2-5987-43f9-bd03-0cbe446679e1/7db7313c1c99104279a69ccd47d160a1/dotnet-sdk-8.0.100-osx-x64.tar.gz -o dotnet.tar.gz -L
+            mkdir dotnet
+            tar zxf dotnet.tar.gz -C dotnet
+            cat > .zshrc << EOL
+            export DOTNET_ROOT=~/dotnet
+            export PATH=\$PATH:~/dotnet
+            EOL
+            source .zshrc
+            mkdir Application
+            cd Application
+            dotnet new tool-manifest
+            dotnet tool install AShevchenko --add-source http://10.0.2.2:5000/v3/index.json
+        SCRIPT
+    end
+
+
+    config.vm.define "linux" do |linux|
+        linux.vm.box = "bento/ubuntu-20.04"
+        linux.vm.provider "virtualbox" do |vb|
+            vb.name = "linux"
+        end
+
+        linux.vm.provision "shell", privileged: false, inline: <<~SCRIPT
+            wget https://download.visualstudio.microsoft.com/download/pr/5226a5fa-8c0b-474f-b79a-8984ad7c5beb/3113ccbf789c9fd29972835f0f334b7a/dotnet-sdk-8.0.100-linux-x64.tar.gz -O dotnet.tar.gz
+            mkdir dotnet
+            tar zxf dotnet.tar.gz -C dotnet
+            cat > .bashrc << EOL
+            export DOTNET_ROOT=~/dotnet
+            export PATH=\$PATH:~/dotnet
+            EOL
+            source .bashrc
+            mkdir Application
+            cd Application
+            dotnet new tool-manifest
+            dotnet tool install AShevchenko --add-source http://10.0.2.2:5000/v3/index.json
+        SCRIPT
+    end
+
+
+    config.vm.define "windows" do |windows|
+        windows.vm.box = "gusztavvargadr/windows-server"
+        windows.vm.boot_timeout = 1800
+        windows.vm.communicator = "winssh"
+        windows.vm.provider "virtualbox" do |vb|
+            vb.name = "windows"
+        end
+
+        windows.vm.provision "shell", privileged: false, reboot: true, inline: <<~SCRIPT
+            $ProgressPreference = "SilentlyContinue"
+            Invoke-WebRequest -Uri https://download.visualstudio.microsoft.com/download/pr/93961dfb-d1e0-49c8-9230-abcba1ebab5a/811ed1eb63d7652325727720edda26a8/dotnet-sdk-8.0.100-win-x64.exe -OutFile dotnet.exe
+            Start-Process dotnet.exe -ArgumentList /quiet, /norestart -Wait
+        SCRIPT
+
+        windows.vm.provision "shell", privileged: false, inline: <<~SCRIPT
+            New-Item Application -ItemType Directory
+            cd Application
+            dotnet new tool-manifest
+            dotnet tool install AShevchenko --add-source http://10.0.2.2:5000/v3/index.json
+        SCRIPT
+    end
+end
