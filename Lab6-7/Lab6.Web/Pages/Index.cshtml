@@ -1,0 +1,66 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <h3>Login</h3>
+    <button onclick="ChangeVersion()">Change Version</button>
+    <div>
+        <input type="text" id="FirstName" placeholder="FirstName" /><br />
+        <input type="text" id="LastName" placeholder="LastName" /><br />
+        <div id="PhoneContainer" style="display: none;">
+            <input type="text" id="Phone" placeholder="Phone" /><br />
+        </div>
+        <button onclick="LoginAsync()">Login</button>
+    </div> 
+
+    <script>
+        var isSecondV = false;
+
+        function ChangeVersion() {
+            isSecondV = !isSecondV;
+            var phoneContainer = document.getElementById('PhoneContainer');
+            if (isSecondV) {
+                phoneContainer.style.display = 'block';
+            } else {
+                phoneContainer.style.display = 'none';
+            }
+        }
+
+        async function LoginAsync(){
+            var firstName = document.getElementById('FirstName').value;
+            var lastName = document.getElementById('LastName').value;
+
+            var phone = isSecondV ? document.getElementById('Phone').value : '';
+
+            var requestUrl = isSecondV ? 'http://localhost:5000/api/v2/customers/login' : 'http://localhost:5000/api/v1/customers/login';
+
+            var response = await fetch(requestUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    firstName: firstName,
+                    lastName: lastName,
+                    phone: phone
+                })
+            });
+
+            if (response.ok) {
+                var token = await response.text();
+
+                if (window.localStorage.getItem('access_token')) {
+                    console.log('yeah')
+                    window.localStorage.removeItem('access_token')
+                }
+
+                window.localStorage.setItem('access_token', token);
+
+                window.location.href = '/customers';
+            }
+        }
+    </script>
+</div>

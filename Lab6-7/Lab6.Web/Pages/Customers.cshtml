@@ -1,0 +1,163 @@
+﻿@page
+@model Lab6.Core.Services.CoreService
+@{
+    ViewData["Title"] = "Customers page";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form id="filterForm">
+    <label for="searchColumn">Search Column:</label>
+    <input type="text" id="searchColumn" name="searchColumn"><br><br>
+
+    <label for="searchPhrase">Search Phrase:</label>
+    <input type="text" id="searchPhrase" name="searchPhrase"><br><br>
+
+    <button type="button" onclick="defaultList()">GetList</button>
+    <button type="button" onclick="getFilteredCustomers()">Filter Customers</button>
+    <button type="button" onclick="defaultList()">Clean Filters</button>
+</form>
+
+<table border ="1">
+    <thead id="customerTableHeader">
+        <tr>
+            <th>id</th>
+            <th>doctorId</th>
+            <th>prescriptionId</th>
+            <th>medicationId</th>
+            <th>medicationId</th>
+            <th>companyName</th>
+            <th>quantity</th>
+            <th>cost</th>
+        </tr>
+    </thead>
+    <tbody id="customerTableBody">
+        <!-- Table rows will be dynamically generated here -->
+    </tbody>
+</table>
+
+<div class="modal fade" id="customerModal" tabindex="-1" role="dialog" aria-labelledby="customerModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="customerModalLabel">Customer Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p><strong>id:</strong> <span id="id"></span></p>
+                <p><strong>doctorId:</strong> <span id="doctorId"></span></p>
+                <p><strong>prescriptionId:</strong> <span id="prescriptionId"></span></p>
+                <p><strong>medicationId:</strong> <span id="medicationId"></span></p>
+                <p><strong>companyName:</strong> <span id="companyName"></span></p>
+                <p><strong>quantity:</strong> <span id="quantity"></span></p>
+                <p><strong>cost:</strong> <span id="cost"></span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function getFilteredCustomers() {
+        const searchColumn = document.getElementById('searchColumn').value;
+        const searchPhrase = document.getElementById('searchPhrase').value;
+
+        const url = new URL('http://localhost:5000/api/v1/customers/');
+        url.searchParams.append('searchColumn', searchColumn);
+        url.searchParams.append('searchPhrase', searchPhrase);
+
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + window.localStorage.getItem('access_token')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+             renderTable(data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    function renderTable(customers) {
+        const tableBody = document.getElementById('customerTableBody');
+        tableBody.innerHTML = ''; // Clear existing table rows
+
+        if (Array.isArray(customers) && customers.length > 0) {
+            customers.forEach(customer => {
+                const row = document.createElement('tr');
+                Object.values(customer).forEach(value => {
+                    const td = document.createElement('td');
+                    td.textContent = value;
+                    row.appendChild(td);
+                });
+
+                tableBody.appendChild(row);
+
+                // Add click event listener to each row
+                row.addEventListener('click', function () {
+                    showCustomerDetails(customer.id, customer.doctorId, customer.prescriptionId, customer.medicationId, customer.companyName, customer.quantity, customer.cost);
+                });
+            });
+        } else {
+            console.error("Invalid or empty customer data."); // Log an error if the data is invalid or empty
+        }
+    }
+
+    function defaultList() {
+        fetch('http://localhost:5000/api/v1/customers/list', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + window.localStorage.getItem('access_token')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+           renderTable(data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    function showCustomerDetails(id, doctorId, prescriptionId, medicationId, companyName, quantity, cost) {
+        document.getElementById('id').innerText = id;
+        document.getElementById('doctorId').innerText = doctorId;
+        document.getElementById('prescriptionId').innerText = prescriptionId;
+        document.getElementById('medicationId').innerText = medicationId;
+        document.getElementById('companyName').innerText = companyName;
+        document.getElementById('quantity').innerText = quantity;
+        document.getElementById('cost').innerText = cost;
+
+        $('#customerModal').modal('show');
+    }
+
+    function closeModal() {
+        $('#customerModal').modal('hide');
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const tableRows = document.querySelectorAll('tbody tr');
+        tableRows.forEach(row => {
+            row.addEventListener('click', function () {
+                const id = this.querySelector('td:first-child').innerText;
+                const doctorId = this.querySelector('td:nth-child(2)').innerText;
+                const prescriptionId = this.querySelector('td:nth-child(3)').innerText;
+                const medicationId = this.querySelector('td:nth-child(4)').innerText;
+                const companyName = this.querySelector('td:nth-child(5)').innerText;
+                const quantity = this.querySelector('td:nth-child(6)').innerText;
+                const cost = this.querySelector('td:nth-child(7)').innerText;
+
+                showCustomerDetails(id, doctorId, prescriptionId, medicationId, companyName, quantity, cost);
+            });
+        });
+
+        const modalCloseButton = document.querySelector('#customerModal .close');
+        modalCloseButton.addEventListener('click', closeModal);
+    });
+</script>
